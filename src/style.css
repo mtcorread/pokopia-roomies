@@ -367,7 +367,8 @@ input[type="text"] { width: 300px; }
 .owned-card {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  overflow: hidden;
   background: var(--surface);
   padding: 12px 16px;
   border-radius: 8px;
@@ -386,13 +387,15 @@ input[type="text"] { width: 300px; }
   padding: 6px 10px;
   font-size: 13px;
   border-radius: 6px;
-  min-width: 160px;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .owned-card .remove-btn {
   background: none;
   border: none;
   color: var(--text-dim);
+  flex-shrink: 0;
   cursor: pointer;
   font-size: 18px;
   padding: 4px 8px;
@@ -418,6 +421,16 @@ input[type="text"] { width: 300px; }
   padding: 16px;
   text-align: center;
   border-top: 3px solid;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.world-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.world-stat.active {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
 }
 .world-stat.wasteland { border-top-color: var(--wasteland); }
 .world-stat.beach { border-top-color: var(--beach); }
@@ -681,6 +694,55 @@ input[type="text"] { width: 300px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .empty-state { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+
+/* -- Pokemon Info Modal -- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.modal-overlay.open {
+  display: flex;
+}
+.modal-content {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.modal-close:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.1);
+}
+.modal-content .info-cat {
+  cursor: default;
+}
+.modal-content .info-cat:hover {
+  background: var(--surface2);
+}
 
 /* -- Responsive -- */
 @media (max-width: 768px) {

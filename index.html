@@ -16,8 +16,7 @@
 
 <div class="app">
   <div class="tabs">
-    <button class="tab" data-tab="plan">Plan World</button>
-    <button class="tab active" data-tab="group">Find Groups</button>
+    <button class="tab active" data-tab="plan">Plan Housing</button>
     <button class="tab" data-tab="my">My Pokemon <span class="badge" id="owned-count-badge">0</span></button>
     <button class="tab" data-tab="info">Pokemon Info</button>
     <button class="tab" data-tab="compare">Compare</button>
@@ -26,29 +25,20 @@
   </div>
 
   <!-- PLAN TAB -->
-  <div id="panel-plan" class="panel">
+  <div id="panel-plan" class="panel active">
     <div class="controls">
-      <h2>Plan World Housing</h2>
+      <h2>Plan Housing</h2>
       <p style="color:var(--text-dim); margin-bottom:16px; font-size:14px;">
-        Automatically assign ALL your Pokemon in a world into optimal house groups.
+        Find optimal house groups for your Pokemon or all Pokemon in the game.
       </p>
       <div class="control-row">
         <div class="control-group">
-          <label>World</label>
-          <select id="plan-world">
-            <option value="Withered Wasteland">Withered Wasteland</option>
-            <option value="Bleak Beach">Bleak Beach</option>
-            <option value="Rocky Ridges">Rocky Ridges</option>
-            <option value="Sparkling Skylands">Sparkling Skylands</option>
-          </select>
-        </div>
-        <div class="control-group">
           <label>House Size</label>
           <select id="plan-house-size">
-            <option value="0">Auto (best clusters)</option>
+            <option value="0" selected>Auto (best clusters)</option>
             <option value="2">2</option>
             <option value="3">3</option>
-            <option value="4" selected>4</option>
+            <option value="4">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
             <option value="7">7</option>
@@ -59,10 +49,27 @@
       </div>
       <div class="toggle-row" style="margin-top:8px;">
         <label class="toggle">
+          <input type="checkbox" id="plan-owned-only">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Use only Pokemon I own</span>
+      </div>
+      <div class="toggle-row" id="plan-world-row" style="display:none;">
+        <label style="font-size:14px; margin-right:8px;">World:</label>
+        <select id="plan-world" style="padding:6px 10px; font-size:13px; border-radius:6px;">
+          <option value="">All Worlds</option>
+          <option value="Withered Wasteland">Withered Wasteland</option>
+          <option value="Bleak Beach">Bleak Beach</option>
+          <option value="Rocky Ridges">Rocky Ridges</option>
+          <option value="Sparkling Skylands">Sparkling Skylands</option>
+        </select>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle">
           <input type="checkbox" id="plan-respect-habitats" checked>
           <span class="slider"></span>
         </label>
-        <span class="toggle-label">Respect habitat conflicts (Bright/Dark, Warm/Humid/Dry)</span>
+        <span class="toggle-label">Respect habitat conflicts (Bright/Dark, Warm/Cool/Humid/Dry)</span>
       </div>
       <div class="toggle-row">
         <label class="toggle">
@@ -73,67 +80,6 @@
       </div>
     </div>
     <div id="plan-results"></div>
-  </div>
-
-  <!-- GROUP TAB -->
-  <div id="panel-group" class="panel active">
-    <div class="controls">
-      <h2>Group Settings</h2>
-      <div class="control-row">
-        <div class="control-group">
-          <label>Group Size</label>
-          <input type="number" id="group-size" min="2" max="20" value="4">
-        </div>
-        <div class="control-group">
-          <label>Max Results</label>
-          <input type="number" id="max-results" min="1" max="100" value="20">
-        </div>
-        <div class="control-group">
-          <label>Filter by World</label>
-          <select id="world-filter">
-            <option value="">All Worlds</option>
-            <option value="Withered Wasteland">Withered Wasteland</option>
-            <option value="Bleak Beach">Bleak Beach</option>
-            <option value="Rocky Ridges">Rocky Ridges</option>
-            <option value="Sparkling Skylands">Sparkling Skylands</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" id="btn-find">Find Best Groups</button>
-      </div>
-
-      <div class="toggle-row">
-        <label class="toggle">
-          <input type="checkbox" id="owned-only">
-          <span class="slider"></span>
-        </label>
-        <span class="toggle-label">Only use Pokemon I own</span>
-      </div>
-      <div class="toggle-row">
-        <label class="toggle">
-          <input type="checkbox" id="respect-habitats" checked>
-          <span class="slider"></span>
-        </label>
-        <span class="toggle-label">Respect habitat conflicts (Bright/Dark, Warm/Humid/Dry)</span>
-      </div>
-      <div class="toggle-row">
-        <label class="toggle">
-          <input type="checkbox" id="evo-priority">
-          <span class="slider"></span>
-        </label>
-        <span class="toggle-label">Prioritize keeping evolution families together</span>
-      </div>
-
-      <div class="control-group" style="margin-top:12px;">
-        <label>Must Include (optional)</label>
-        <div class="autocomplete-wrapper">
-          <input type="text" id="include-input" placeholder="Type a Pokemon name to add...">
-          <div class="autocomplete-list" id="include-autocomplete"></div>
-        </div>
-        <div class="tag-container" id="include-tags"></div>
-      </div>
-    </div>
-
-    <div id="group-results"></div>
   </div>
 
   <!-- MY POKEMON TAB -->
@@ -158,16 +104,6 @@
     <div class="controls" style="padding: 16px 24px;">
       <div class="control-row" style="margin-bottom:0;">
         <input type="text" id="my-search" placeholder="Filter your Pokemon..." style="flex:1; max-width:300px;">
-        <div class="control-group">
-          <select id="my-world-filter" style="padding:10px 14px;">
-            <option value="">All Worlds</option>
-            <option value="Withered Wasteland">Withered Wasteland</option>
-            <option value="Bleak Beach">Bleak Beach</option>
-            <option value="Rocky Ridges">Rocky Ridges</option>
-            <option value="Sparkling Skylands">Sparkling Skylands</option>
-            <option value="Unassigned">Unassigned</option>
-          </select>
-        </div>
       </div>
     </div>
 
@@ -223,6 +159,10 @@
     </div>
     <div class="pokemon-grid" id="pokemon-list" style="margin-top: 16px;"></div>
   </div>
+</div>
+
+<div class="modal-overlay" id="pokemon-modal">
+  <div class="modal-content" id="pokemon-modal-body"></div>
 </div>
 
 <script type="module" src="/src/main.js"></script>

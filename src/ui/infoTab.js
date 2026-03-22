@@ -10,6 +10,40 @@ export function showPokemonInfo(name) {
   renderPokemonInfo(name);
 }
 
+export function showPokemonPopup(name) {
+  if (!pokemonPrefs[name]) return;
+  const modal = document.getElementById('pokemon-modal');
+  const body = document.getElementById('pokemon-modal-body');
+  const cats = [...pokemonPrefs[name]].sort();
+  const owned = isOwned(name);
+  const world = getWorld(name);
+
+  body.innerHTML = `
+    <button class="modal-close">&times;</button>
+    <h3 style="margin-bottom:8px;">${esc(name)}</h3>
+    <p style="color: var(--text-dim); margin-bottom: 16px; font-size: 14px;">
+      Likes ${cats.length} categories
+      ${getHabitat(name) ? ` &middot; ${habitatBadge(name)} habitat` : ''}
+      ${getFamily(name) >= 0 ? ` &middot; Family: ${getFamilyMembers(name).map(esc).join(' &rarr; ')}` : ''}
+      ${owned ? ` &middot; <span class="owned-marker ${world ? 'world-' + worldToClass(world) : 'world-unassigned'}" style="padding:3px 10px;border-radius:12px;font-size:12px;">${esc(world) || 'Owned (no world)'}</span>` : ''}
+    </p>
+    <div class="info-cats">
+      ${cats.map(c => {
+        const members = [...catToPokemon[c]].sort();
+        return `<div class="info-cat" title="${members.length} Pokemon like this">${esc(c)} (${members.length})</div>`;
+      }).join('')}
+    </div>
+  `;
+
+  modal.classList.add('open');
+
+  const close = () => modal.classList.remove('open');
+  body.querySelector('.modal-close').addEventListener('click', close);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) close();
+  });
+}
+
 export function renderPokemonInfo(name) {
   const container = document.getElementById('info-results');
   if (!pokemonPrefs[name]) {

@@ -164,10 +164,17 @@ function findGlobal(groupSize, topN, pool, respectHabitats) {
   return results.slice(0, topN);
 }
 
-export function planWorldAuto(world, respectHabitats, evoPriority) {
-  const pool = Object.entries(settings.owned)
-    .filter(([_, info]) => info.world === world)
-    .map(([name]) => name);
+export function planAll(houseSize, respectHabitats, evoPriority) {
+  const pool = [...allPokemon];
+  return planWithPool(pool, houseSize, respectHabitats, evoPriority);
+}
+
+export function planWithPool(pool, houseSize, respectHabitats, evoPriority) {
+  if (houseSize === 0) return planAutoWithPool(pool, respectHabitats, evoPriority);
+  return planFixedWithPool(pool, houseSize, respectHabitats, evoPriority);
+}
+
+function planAutoWithPool(pool, respectHabitats, evoPriority) {
 
   if (pool.length === 0) return { houses: [], leftover: [], totalScore: 0, habitatConflicts: 0, familyBondsTotal: 0 };
 
@@ -235,12 +242,13 @@ export function planWorldAuto(world, respectHabitats, evoPriority) {
 }
 
 export function planWorld(world, houseSize, respectHabitats, evoPriority) {
-  if (houseSize === 0) return planWorldAuto(world, respectHabitats, evoPriority);
-
   const pool = Object.entries(settings.owned)
     .filter(([_, info]) => info.world === world)
     .map(([name]) => name);
+  return planWithPool(pool, houseSize, respectHabitats, evoPriority);
+}
 
+function planFixedWithPool(pool, houseSize, respectHabitats, evoPriority) {
   if (pool.length === 0) return { houses: [], leftover: [], totalScore: 0, habitatConflicts: 0, familyBondsTotal: 0 };
 
   function groupScore(group) {

@@ -2,7 +2,6 @@ import './style.css';
 import { initData } from './data.js';
 import { loadSettings } from './settings.js';
 import { switchTab } from './ui/tabs.js';
-import { initGroupTab } from './ui/groupTab.js';
 import { initPlanTab } from './ui/planTab.js';
 import { initMyPokemonTab } from './ui/myPokemonTab.js';
 import { initInfoTab } from './ui/infoTab.js';
@@ -20,7 +19,6 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 // Init all tabs
-initGroupTab();
 initPlanTab();
 initMyPokemonTab();
 initInfoTab();

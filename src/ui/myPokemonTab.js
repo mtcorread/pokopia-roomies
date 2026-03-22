@@ -6,9 +6,9 @@ import { showPokemonInfo } from './infoTab.js';
 
 export function renderMyPokemon() {
   const search = (document.getElementById('my-search')?.value || '').toLowerCase();
-  const worldFilter = document.getElementById('my-world-filter')?.value || '';
-
   const statsEl = document.getElementById('world-stats');
+  const worldFilter = statsEl.dataset.filter || '';
+
   const worldCounts = {};
   for (const w of WORLDS) worldCounts[w] = 0;
   let unassigned = 0;
@@ -20,12 +20,12 @@ export function renderMyPokemon() {
     }
   }
   statsEl.innerHTML = WORLDS.map(w => `
-    <div class="world-stat ${worldToClass(w)}">
+    <div class="world-stat ${worldToClass(w)} ${worldFilter === w ? 'active' : ''}" data-world="${esc(w)}">
       <div class="world-name">${esc(w)}</div>
       <div class="world-count">${worldCounts[w]}</div>
     </div>
   `).join('') + `
-    <div class="world-stat" style="border-top-color: var(--text-dim);">
+    <div class="world-stat ${worldFilter === 'Unassigned' ? 'active' : ''}" data-world="Unassigned" style="border-top-color: var(--text-dim);">
       <div class="world-name">Unassigned</div>
       <div class="world-count">${unassigned}</div>
     </div>
@@ -99,7 +99,15 @@ export function initMyPokemonTab() {
   );
 
   document.getElementById('my-search')?.addEventListener('input', () => renderMyPokemon());
-  document.getElementById('my-world-filter')?.addEventListener('change', () => renderMyPokemon());
+
+  document.getElementById('world-stats').addEventListener('click', (e) => {
+    const stat = e.target.closest('.world-stat');
+    if (!stat) return;
+    const statsEl = document.getElementById('world-stats');
+    const world = stat.dataset.world;
+    statsEl.dataset.filter = statsEl.dataset.filter === world ? '' : world;
+    renderMyPokemon();
+  });
 
   document.getElementById('btn-export').addEventListener('click', () => {
     exportSettings();

@@ -1,17 +1,18 @@
 import {
   sharedCategories, getGroupHabitatConflicts, familyBonds,
-  getHabitat, getFamily, sameFamily, getFamilyMembers,
+  allPokemon, getFamily, sameFamily,
 } from '../data.js';
-import { planWorld } from '../optimizer.js';
+import { planWithPool } from '../optimizer.js';
+import { settings, getWorld } from '../settings.js';
 import { esc, habitatBadge } from './helpers.js';
-import { showPokemonInfo } from './infoTab.js';
+import { showPokemonPopup } from './infoTab.js';
 
-function renderPlanResults(result, world, houseSize) {
+function renderPlanResults(result, houseSize) {
   const container = document.getElementById('plan-results');
 
   if (result.houses.length === 0) {
     container.innerHTML = `<div class="empty-state">
-      <p>No Pokemon found in ${esc(world)}, or no compatible groups could be formed. Try disabling habitat constraints or adding more Pokemon.</p>
+      <p>No compatible groups could be formed. Try changing your filters or disabling habitat constraints.</p>
     </div>`;
     return;
   }
@@ -26,7 +27,7 @@ function renderPlanResults(result, world, houseSize) {
       </div>
       <div class="plan-stat">
         <div class="value">${result.houses.length}</div>
-        <div class="label">Houses</div>
+        <div class="label">${houseSize === 0 ? 'Clusters' : 'Houses'}</div>
       </div>
       <div class="plan-stat">
         <div class="value">${result.totalScore}</div>
@@ -115,23 +116,47 @@ function renderPlanResults(result, world, houseSize) {
 
   container.addEventListener('click', (e) => {
     const badge = e.target.closest('.pokemon-badge');
-    if (badge) showPokemonInfo(badge.dataset.pokemon);
+    if (badge) showPokemonPopup(badge.dataset.pokemon);
   });
 }
 
+function getPool() {
+  const ownedOnly = document.getElementById('plan-owned-only').checked;
+  const worldFilter = document.getElementById('plan-world').value;
+
+  if (!ownedOnly) {
+    return [...allPokemon];
+  }
+
+  let owned = Object.keys(settings.owned);
+  if (worldFilter) {
+    owned = owned.filter(p => getWorld(p) === worldFilter);
+  }
+  return owned;
+}
+
 export function initPlanTab() {
+  const ownedToggle = document.getElementById('plan-owned-only');
+  const worldRow = document.getElementById('plan-world-row');
+
+  ownedToggle.addEventListener('change', () => {
+    worldRow.style.display = ownedToggle.checked ? 'flex' : 'none';
+  });
+
   document.getElementById('btn-plan').addEventListener('click', () => {
-    const world = document.getElementById('plan-world').value;
     const houseSize = parseInt(document.getElementById('plan-house-size').value);
     const respectHabitats = document.getElementById('plan-respect-habitats').checked;
     const evoPriority = document.getElementById('plan-evo-priority').checked;
     const container = document.getElementById('plan-results');
+    const pool = getPool();
 
-    container.innerHTML = `<div class="loading"><div class="spinner"></div><p>Optimizing housing for ${esc(world)}...</p></div>`;
+    const ownedOnly = document.getElementById('plan-owned-only').checked;
+    const label = ownedOnly ? 'your Pokemon' : 'all Pokemon';
+    container.innerHTML = `<div class="loading"><div class="spinner"></div><p>Optimizing housing for ${esc(label)}...</p></div>`;
 
     setTimeout(() => {
-      const result = planWorld(world, houseSize, respectHabitats, evoPriority);
-      renderPlanResults(result, world, houseSize);
+      const result = planWithPool(pool, houseSize, respectHabitats, evoPriority);
+      renderPlanResults(result, houseSize);
     }, 50);
   });
 }
