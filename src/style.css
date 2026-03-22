@@ -141,6 +141,8 @@ input[type="number"], input[type="text"], select {
   font-size: 15px;
   outline: none;
   transition: border-color 0.2s;
+  height: 42px;
+  box-sizing: border-box;
 }
 
 input:focus, select:focus { border-color: var(--accent); }

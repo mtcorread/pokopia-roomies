@@ -1,14 +1,15 @@
 import {
   sharedCategories, getGroupHabitatConflicts, familyBonds,
-  allPokemon, getFamily, sameFamily,
+  allPokemon, getFamily, sameFamily, pokemonPrefs,
 } from '../data.js';
 import { planWithPool } from '../optimizer.js';
 import { settings, getWorld } from '../settings.js';
 import { esc, habitatBadge } from './helpers.js';
 import { showPokemonPopup } from './infoTab.js';
 
-function renderPlanResults(result, houseSize) {
+function renderPlanResults(result, mode) {
   const container = document.getElementById('plan-results');
+  const isAuto = mode === 'auto';
 
   if (result.houses.length === 0) {
     container.innerHTML = `<div class="empty-state">
@@ -27,11 +28,11 @@ function renderPlanResults(result, houseSize) {
       </div>
       <div class="plan-stat">
         <div class="value">${result.houses.length}</div>
-        <div class="label">${houseSize === 0 ? 'Clusters' : 'Houses'}</div>
+        <div class="label">${isAuto ? 'Clusters' : 'Houses'}</div>
       </div>
       <div class="plan-stat">
         <div class="value">${result.totalScore}</div>
-        <div class="label">Total Shared Categories</div>
+        <div class="label">Compatibility Score</div>
       </div>
       <div class="plan-stat">
         <div class="value">${result.leftover.length}</div>
@@ -50,8 +51,12 @@ function renderPlanResults(result, houseSize) {
 
   const evoColorPalette = ['#b388ff', '#82b1ff', '#80cbc4', '#fff176', '#ffab91', '#ce93d8'];
 
+  const absorbedInfo = result.absorbedInfo || {};
+
   result.houses.forEach((house, i) => {
-    const cats = sharedCategories(house);
+    const coreMembers = house.filter(p => !absorbedInfo[p]);
+    const absorbedMembers = house.filter(p => absorbedInfo[p]);
+    const cats = sharedCategories(coreMembers.length >= 2 ? coreMembers : house);
     const conflicts = getGroupHabitatConflicts(house);
     const bonds = familyBonds(house);
     const scoreClass = cats.size >= 3 ? 'good' : cats.size >= 1 ? 'ok' : 'bad';
@@ -71,26 +76,76 @@ function renderPlanResults(result, houseSize) {
       }
     }
 
+    function renderBadge(p) {
+      const fam = getFamily(p);
+      const famColor = familyColors[fam];
+      const border = famColor ? `border: 2px solid ${famColor}` : '';
+      return `<span class="pokemon-badge" data-pokemon="${esc(p)}" style="${border}">${esc(p)} ${habitatBadge(p)}</span>`;
+    }
+
     html += `
       <div class="plan-house ${houseClass}">
         <div class="plan-house-header">
-          <h3>${houseSize === 0 ? 'Cluster' : 'House'} ${i + 1} <span style="color:var(--text-dim);font-weight:400;font-size:13px;">(${house.length} Pokemon)</span></h3>
+          <h3>${isAuto ? 'Cluster' : 'House'} ${i + 1} <span style="color:var(--text-dim);font-weight:400;font-size:13px;">(${house.length} Pokemon)</span></h3>
           <div>
             ${bonds > 0 ? `<span style="font-size:13px;color:#b388ff;margin-right:12px;">&#9829; ${bonds} family bond${bonds > 1 ? 's' : ''}</span>` : ''}
             <span class="plan-house-score ${scoreClass}">${cats.size} shared categor${cats.size === 1 ? 'y' : 'ies'}</span>
           </div>
         </div>
         <div class="result-pokemon">
-          ${house.map(p => {
-            const fam = getFamily(p);
-            const famColor = familyColors[fam];
-            const border = famColor ? `border: 2px solid ${famColor}` : '';
-            return `<span class="pokemon-badge" data-pokemon="${esc(p)}" style="${border}">${esc(p)} ${habitatBadge(p)}</span>`;
-          }).join('')}
+          ${coreMembers.map(renderBadge).join('')}
         </div>
         ${cats.size > 0 ? `<div class="result-categories">
           ${[...cats].sort().map(c => `<span class="cat-badge">${esc(c)}</span>`).join('')}
         </div>` : '<div style="color:var(--text-dim);font-size:13px;">No categories in common</div>'}
+        ${(() => {
+          // Find sub-groups: categories shared by 2+ members but not everyone
+          const allCatsInHouse = new Set();
+          for (const p of coreMembers) {
+            for (const c of pokemonPrefs[p]) allCatsInHouse.add(c);
+          }
+          const subGroups = [];
+          for (const cat of allCatsInHouse) {
+            if (cats.has(cat)) continue; // skip group-wide categories
+            const members = coreMembers.filter(p => pokemonPrefs[p].has(cat));
+            if (members.length >= 2) {
+              subGroups.push({ cat, members });
+            }
+          }
+          if (subGroups.length === 0) return '';
+          // Deduplicate: group categories that have the exact same members
+          const byMembers = {};
+          for (const sg of subGroups) {
+            const key = sg.members.sort().join('|');
+            if (!byMembers[key]) byMembers[key] = { members: sg.members, cats: [] };
+            byMembers[key].cats.push(sg.cat);
+          }
+          const groups = Object.values(byMembers).sort((a, b) => b.members.length - a.members.length);
+          return `<div style="margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
+            <div style="font-size:12px; color:var(--text-dim); margin-bottom:6px;">Sub-groups:</div>
+            ${groups.map(g =>
+              `<div style="margin-bottom:6px; font-size:13px;">
+                <span style="color:var(--text-dim);">${g.members.map(p => esc(p)).join(', ')}</span>
+                &mdash; ${g.cats.sort().map(c => `<span class="cat-badge" style="font-size:11px;">${esc(c)}</span>`).join(' ')}
+              </div>`
+            ).join('')}
+          </div>`;
+        })()}
+        ${absorbedMembers.length > 0 ? `
+          <div style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:12px; color:var(--text-dim); margin-bottom:8px;">Joined via shared categories:</div>
+            ${absorbedMembers.map(p => {
+              const info = absorbedInfo[p];
+              const connections = info.connections.map(c =>
+                `${esc(c.member)} (${[...c.shared].sort().map(cat => esc(cat)).join(', ')})`
+              ).join('; ');
+              return `<div style="margin-bottom:6px;">
+                ${renderBadge(p)}
+                <span style="font-size:12px; color:var(--text-dim);"> shares with ${connections}</span>
+              </div>`;
+            }).join('')}
+          </div>
+        ` : ''}
         ${conflicts.length > 0 ? `<div class="conflict-warning">
           Habitat conflicts: ${conflicts.map(c => `${esc(c.a)} (${esc(c.habA)}) vs ${esc(c.b)} (${esc(c.habB)})`).join(', ')}
         </div>` : ''}
@@ -138,13 +193,21 @@ function getPool() {
 export function initPlanTab() {
   const ownedToggle = document.getElementById('plan-owned-only');
   const worldRow = document.getElementById('plan-world-row');
+  const modeSelect = document.getElementById('plan-house-mode');
+  const sizeGroup = document.getElementById('plan-size-group');
 
   ownedToggle.addEventListener('change', () => {
     worldRow.style.display = ownedToggle.checked ? 'flex' : 'none';
   });
 
+  modeSelect.addEventListener('change', () => {
+    sizeGroup.style.display = modeSelect.value === 'auto' ? 'none' : '';
+  });
+
   document.getElementById('btn-plan').addEventListener('click', () => {
-    const houseSize = parseInt(document.getElementById('plan-house-size').value);
+    const modeType = modeSelect.value;
+    const number = parseInt(document.getElementById('plan-house-number').value) || 4;
+    const mode = modeType === 'auto' ? 'auto' : `${modeType}-${number}`;
     const respectHabitats = document.getElementById('plan-respect-habitats').checked;
     const evoPriority = document.getElementById('plan-evo-priority').checked;
     const container = document.getElementById('plan-results');
@@ -155,8 +218,8 @@ export function initPlanTab() {
     container.innerHTML = `<div class="loading"><div class="spinner"></div><p>Optimizing housing for ${esc(label)}...</p></div>`;
 
     setTimeout(() => {
-      const result = planWithPool(pool, houseSize, respectHabitats, evoPriority);
-      renderPlanResults(result, houseSize);
+      const result = planWithPool(pool, mode, respectHabitats, evoPriority);
+      renderPlanResults(result, mode);
     }, 50);
   });
 }

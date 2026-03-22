@@ -32,18 +32,17 @@
         Find optimal house groups for your Pokemon or all Pokemon in the game.
       </p>
       <div class="control-row">
-        <div class="control-group">
-          <label>House Size</label>
-          <select id="plan-house-size">
-            <option value="0" selected>Auto (best clusters)</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
+        <div class="control-group" style="min-width:180px;">
+          <label>Mode</label>
+          <select id="plan-house-mode" style="width:100%;">
+            <option value="auto" selected>Auto (best clusters)</option>
+            <option value="max">Max per house</option>
+            <option value="exact">Exactly per house</option>
           </select>
+        </div>
+        <div class="control-group" id="plan-size-group" style="display:none; min-width:180px;">
+          <label>Size</label>
+          <input type="number" id="plan-house-number" min="2" max="20" value="4" style="width:100%; box-sizing:border-box;">
         </div>
         <button class="btn btn-primary" id="btn-plan">Plan Housing</button>
       </div>
