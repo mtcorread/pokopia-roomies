@@ -92,7 +92,7 @@ export function exportSettings() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'pokopia-settings.json';
+  a.download = 'PokemonIOwn.json';
   a.click();
   URL.revokeObjectURL(url);
 }
