@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokopia Roommate Optimizer</title>
+</head>
+<body>
+
+<div class="save-indicator" id="save-indicator">Saved!</div>
+
+<header>
+  <h1>Pokopia Roommate Optimizer</h1>
+  <p>Find the best Roommate groups based on shared favorite categories</p>
+</header>
+
+<div class="app">
+  <div class="tabs">
+    <button class="tab" data-tab="plan">Plan World</button>
+    <button class="tab active" data-tab="group">Find Groups</button>
+    <button class="tab" data-tab="my">My Pokemon <span class="badge" id="owned-count-badge">0</span></button>
+    <button class="tab" data-tab="info">Pokemon Info</button>
+    <button class="tab" data-tab="compare">Compare</button>
+    <button class="tab" data-tab="categories">Categories</button>
+    <button class="tab" data-tab="list">All Pokemon</button>
+  </div>
+
+  <!-- PLAN TAB -->
+  <div id="panel-plan" class="panel">
+    <div class="controls">
+      <h2>Plan World Housing</h2>
+      <p style="color:var(--text-dim); margin-bottom:16px; font-size:14px;">
+        Automatically assign ALL your Pokemon in a world into optimal house groups.
+      </p>
+      <div class="control-row">
+        <div class="control-group">
+          <label>World</label>
+          <select id="plan-world">
+            <option value="Withered Wasteland">Withered Wasteland</option>
+            <option value="Bleak Beach">Bleak Beach</option>
+            <option value="Rocky Ridges">Rocky Ridges</option>
+            <option value="Sparkling Skylands">Sparkling Skylands</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>House Size</label>
+          <select id="plan-house-size">
+            <option value="0">Auto (best clusters)</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="btn-plan">Plan Housing</button>
+      </div>
+      <div class="toggle-row" style="margin-top:8px;">
+        <label class="toggle">
+          <input type="checkbox" id="plan-respect-habitats" checked>
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Respect habitat conflicts (Bright/Dark, Warm/Humid/Dry)</span>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="plan-evo-priority" checked>
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Prioritize keeping evolution families together</span>
+      </div>
+    </div>
+    <div id="plan-results"></div>
+  </div>
+
+  <!-- GROUP TAB -->
+  <div id="panel-group" class="panel active">
+    <div class="controls">
+      <h2>Group Settings</h2>
+      <div class="control-row">
+        <div class="control-group">
+          <label>Group Size</label>
+          <input type="number" id="group-size" min="2" max="20" value="4">
+        </div>
+        <div class="control-group">
+          <label>Max Results</label>
+          <input type="number" id="max-results" min="1" max="100" value="20">
+        </div>
+        <div class="control-group">
+          <label>Filter by World</label>
+          <select id="world-filter">
+            <option value="">All Worlds</option>
+            <option value="Withered Wasteland">Withered Wasteland</option>
+            <option value="Bleak Beach">Bleak Beach</option>
+            <option value="Rocky Ridges">Rocky Ridges</option>
+            <option value="Sparkling Skylands">Sparkling Skylands</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="btn-find">Find Best Groups</button>
+      </div>
+
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="owned-only">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Only use Pokemon I own</span>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="respect-habitats" checked>
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Respect habitat conflicts (Bright/Dark, Warm/Humid/Dry)</span>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="evo-priority">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Prioritize keeping evolution families together</span>
+      </div>
+
+      <div class="control-group" style="margin-top:12px;">
+        <label>Must Include (optional)</label>
+        <div class="autocomplete-wrapper">
+          <input type="text" id="include-input" placeholder="Type a Pokemon name to add...">
+          <div class="autocomplete-list" id="include-autocomplete"></div>
+        </div>
+        <div class="tag-container" id="include-tags"></div>
+      </div>
+    </div>
+
+    <div id="group-results"></div>
+  </div>
+
+  <!-- MY POKEMON TAB -->
+  <div id="panel-my" class="panel">
+    <div class="controls">
+      <h2>My Pokemon Collection</h2>
+      <p style="color:var(--text-dim); margin-bottom:16px; font-size:14px;">
+        Add Pokemon you own and assign them to a world. Your settings are saved automatically.
+      </p>
+      <div class="autocomplete-wrapper">
+        <input type="text" id="my-add-input" placeholder="Type a Pokemon name to add to your collection...">
+        <div class="autocomplete-list" id="my-add-autocomplete"></div>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px;">
+        <button class="btn btn-secondary btn-sm" id="btn-import">Import from file</button>
+        <button class="btn btn-secondary btn-sm" id="btn-export">Export to file</button>
+      </div>
+    </div>
+
+    <div class="world-stats" id="world-stats"></div>
+
+    <div class="controls" style="padding: 16px 24px;">
+      <div class="control-row" style="margin-bottom:0;">
+        <input type="text" id="my-search" placeholder="Filter your Pokemon..." style="flex:1; max-width:300px;">
+        <div class="control-group">
+          <select id="my-world-filter" style="padding:10px 14px;">
+            <option value="">All Worlds</option>
+            <option value="Withered Wasteland">Withered Wasteland</option>
+            <option value="Bleak Beach">Bleak Beach</option>
+            <option value="Rocky Ridges">Rocky Ridges</option>
+            <option value="Sparkling Skylands">Sparkling Skylands</option>
+            <option value="Unassigned">Unassigned</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="my-pokemon-grid" id="my-pokemon-grid" style="margin-top:16px;"></div>
+  </div>
+
+  <!-- INFO TAB -->
+  <div id="panel-info" class="panel">
+    <div class="controls">
+      <h2>Pokemon Info</h2>
+      <div class="autocomplete-wrapper">
+        <input type="text" id="info-input" placeholder="Type a Pokemon name...">
+        <div class="autocomplete-list" id="info-autocomplete"></div>
+      </div>
+    </div>
+    <div id="info-results"></div>
+  </div>
+
+  <!-- COMPARE TAB -->
+  <div id="panel-compare" class="panel">
+    <div class="controls">
+      <h2>Compare Pokemon</h2>
+      <div class="autocomplete-wrapper">
+        <input type="text" id="compare-input" placeholder="Type a Pokemon name to add...">
+        <div class="autocomplete-list" id="compare-autocomplete"></div>
+      </div>
+      <div class="tag-container" id="compare-tags"></div>
+      <div style="margin-top: 16px;">
+        <button class="btn btn-primary" id="btn-compare">Compare</button>
+        <button class="btn btn-secondary" id="btn-compare-clear" style="margin-left:8px;">Clear</button>
+      </div>
+    </div>
+    <div id="compare-results"></div>
+  </div>
+
+  <!-- CATEGORIES TAB -->
+  <div id="panel-categories" class="panel">
+    <div class="controls">
+      <h2>Favorite Categories</h2>
+      <p style="color:var(--text-dim); margin-bottom:12px; font-size:14px;">Click a category to see all Pokemon that like it and their full profiles.</p>
+      <input type="text" id="cat-search" class="search-box" placeholder="Filter categories...">
+    </div>
+    <div id="cat-list"></div>
+    <div id="cat-detail" style="display:none;"></div>
+  </div>
+
+  <!-- LIST TAB -->
+  <div id="panel-list" class="panel">
+    <div class="controls">
+      <h2>All Pokemon</h2>
+      <input type="text" id="list-search" class="search-box" placeholder="Filter Pokemon...">
+      <div style="color: var(--text-dim); font-size: 14px;" id="list-count"></div>
+    </div>
+    <div class="pokemon-grid" id="pokemon-list" style="margin-top: 16px;"></div>
+  </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+
+</body>
+</html>
