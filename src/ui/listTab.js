@@ -18,8 +18,14 @@ export function renderPokemonList(filter = '') {
       <button class="own-btn ${owned ? 'owned' : ''}" data-action="toggle-own" title="${owned ? 'Remove from My Pokemon' : 'Add to My Pokemon'}">${owned ? '&#10003;' : '+'}</button>
     </div>`;
   }).join('');
+}
 
-  container.addEventListener('click', (e) => {
+export function initListTab() {
+  document.getElementById('list-search').addEventListener('input', (e) => {
+    renderPokemonList(e.target.value);
+  });
+
+  document.getElementById('pokemon-list').addEventListener('click', (e) => {
     const item = e.target.closest('.pokemon-list-item');
     if (!item) return;
     const name = item.dataset.pokemon;
@@ -35,11 +41,5 @@ export function renderPokemonList(filter = '') {
     } else {
       showPokemonInfo(name);
     }
-  });
-}
-
-export function initListTab() {
-  document.getElementById('list-search').addEventListener('input', (e) => {
-    renderPokemonList(e.target.value);
   });
 }

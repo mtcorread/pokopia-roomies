@@ -39,7 +39,7 @@ function renderPlanResults(result, mode) {
         <div class="label">Unhoused</div>
       </div>
       ${result.familyBondsTotal > 0 ? `<div class="plan-stat">
-        <div class="value" style="color:#b388ff;">${result.familyBondsTotal}</div>
+        <div class="value" style="color:var(--clr-primary-a0);">${result.familyBondsTotal}</div>
         <div class="label">Family Bonds</div>
       </div>` : ''}
       ${result.habitatConflicts > 0 ? `<div class="plan-stat">
@@ -49,7 +49,7 @@ function renderPlanResults(result, mode) {
     </div>
   `;
 
-  const evoColorPalette = ['#b388ff', '#82b1ff', '#80cbc4', '#fff176', '#ffab91', '#ce93d8'];
+  const evoColorPalette = ['#8e7bcf', '#388cfa', '#009f42', '#f0ad4e', '#cf7b91', '#7566a9'];
 
   const absorbedInfo = result.absorbedInfo || {};
 
@@ -88,7 +88,7 @@ function renderPlanResults(result, mode) {
         <div class="plan-house-header">
           <h3>${isAuto ? 'Cluster' : 'House'} ${i + 1} <span style="color:var(--text-dim);font-weight:400;font-size:13px;">(${house.length} Pokemon)</span></h3>
           <div>
-            ${bonds > 0 ? `<span style="font-size:13px;color:#b388ff;margin-right:12px;">&#9829; ${bonds} family bond${bonds > 1 ? 's' : ''}</span>` : ''}
+            ${bonds > 0 ? `<span style="font-size:13px;color:var(--clr-primary-a0);margin-right:12px;">&#9829; ${bonds} family bond${bonds > 1 ? 's' : ''}</span>` : ''}
             <span class="plan-house-score ${scoreClass}">${cats.size} shared categor${cats.size === 1 ? 'y' : 'ies'}</span>
           </div>
         </div>
