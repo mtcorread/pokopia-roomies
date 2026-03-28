@@ -15,6 +15,7 @@ export function worldToClass(world) {
     'Bleak Beach': 'beach',
     'Rocky Ridges': 'ridges',
     'Sparkling Skylands': 'skylands',
+    'Pallet Town': 'pallet',
   };
   return map[world] || 'unassigned';
 }

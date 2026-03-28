@@ -1,6 +1,6 @@
 import POKOPIA_DATA from './pokopia-data.json';
 
-export const WORLDS = ['Withered Wasteland', 'Bleak Beach', 'Rocky Ridges', 'Sparkling Skylands'];
+export const WORLDS = ['Withered Wasteland', 'Bleak Beach', 'Rocky Ridges', 'Sparkling Skylands', 'Pallet Town'];
 
 export const pokemonPrefs = {};
 export const catToPokemon = {};

@@ -64,6 +64,7 @@
   --beach: #2e86ab;
   --ridges: #a4303f;
   --skylands: #7b68ee;
+  --pallet: #3a9a5b;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -292,6 +293,7 @@ input[type="text"] { width: 300px; }
 .world-beach { background: var(--beach); color: white; }
 .world-ridges { background: var(--ridges); color: white; }
 .world-skylands { background: var(--skylands); color: white; }
+.world-pallet { background: var(--pallet); color: white; }
 .world-unassigned { background: var(--surface2); color: var(--text-dim); }
 
 .world-dot {
@@ -305,6 +307,7 @@ input[type="text"] { width: 300px; }
 .world-dot.beach { background: var(--beach); }
 .world-dot.ridges { background: var(--ridges); }
 .world-dot.skylands { background: var(--skylands); }
+.world-dot.pallet { background: var(--pallet); }
 
 /* -- Results -- */
 .results-header {
@@ -489,6 +492,7 @@ input[type="text"] { width: 300px; }
 .world-stat.beach { border-top-color: var(--beach); }
 .world-stat.ridges { border-top-color: var(--ridges); }
 .world-stat.skylands { border-top-color: var(--skylands); }
+.world-stat.pallet { border-top-color: var(--pallet); }
 .world-stat .world-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
 .world-stat .world-count { font-size: 28px; font-weight: 700; color: var(--gold); }
 
