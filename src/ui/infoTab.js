@@ -3,6 +3,7 @@ import { isOwned, getWorld, addOwned } from '../settings.js';
 import { setupAutocomplete } from './autocomplete.js';
 import { esc, worldToClass, habitatBadge } from './helpers.js';
 import { switchTab } from './tabs.js';
+import { spriteImg } from '../sprites.js';
 
 export function showPokemonInfo(name) {
   switchTab('info');
@@ -20,7 +21,10 @@ export function showPokemonPopup(name) {
 
   body.innerHTML = `
     <button class="modal-close">&times;</button>
-    <h3 style="margin-bottom:8px;">${esc(name)}</h3>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      ${spriteImg(name, 'sprite-lg')}
+      <h3>${esc(name)}</h3>
+    </div>
     <p style="color: var(--text-dim); margin-bottom: 16px; font-size: 14px;">
       Likes ${cats.length} categories
       ${getHabitat(name) ? ` &middot; ${habitatBadge(name)} habitat` : ''}
@@ -56,7 +60,10 @@ export function renderPokemonInfo(name) {
 
   container.innerHTML = `
     <div class="info-card">
-      <h3>${esc(name)}</h3>
+      <div style="display:flex;align-items:center;gap:10px;">
+        ${spriteImg(name, 'sprite-lg')}
+        <h3>${esc(name)}</h3>
+      </div>
       <p style="color: var(--text-dim); margin-bottom: 16px;">
         Likes ${cats.length} categories
         ${getHabitat(name) ? ` &middot; ${habitatBadge(name)} habitat` : ''}

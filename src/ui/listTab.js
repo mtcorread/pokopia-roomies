@@ -2,6 +2,7 @@ import { allPokemon, pokemonPrefs } from '../data.js';
 import { isOwned, getWorld, addOwned, removeOwned } from '../settings.js';
 import { esc, worldToClass } from './helpers.js';
 import { showPokemonInfo } from './infoTab.js';
+import { spriteImg } from '../sprites.js';
 
 export function renderPokemonList(filter = '') {
   const v = document.getElementById('list-search')?.value || filter;
@@ -13,7 +14,7 @@ export function renderPokemonList(filter = '') {
     const owned = isOwned(p);
     const world = getWorld(p);
     return `<div class="pokemon-list-item" data-pokemon="${esc(p)}">
-      <span>${owned ? '<span class="world-dot ' + worldToClass(world || '') + '"></span>' : ''}${esc(p)}</span>
+      <span>${spriteImg(p)}${owned ? '<span class="world-dot ' + worldToClass(world || '') + '"></span>' : ''}${esc(p)}</span>
       <span class="count">${pokemonPrefs[p].size} cats</span>
       <button class="own-btn ${owned ? 'owned' : ''}" data-action="toggle-own" title="${owned ? 'Remove from My Pokemon' : 'Add to My Pokemon'}">${owned ? '&#10003;' : '+'}</button>
     </div>`;

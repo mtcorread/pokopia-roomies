@@ -85,6 +85,22 @@
   --shadow-glow: 0 0 20px rgba(142, 123, 207, 0.15);
 }
 
+/* ---- Sprites ---- */
+.pkmn-sprite {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 6px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+}
+
+.pkmn-sprite.sprite-lg {
+  width: 48px;
+  height: 48px;
+}
+
 /* ---- Reset ---- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

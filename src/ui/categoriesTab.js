@@ -2,6 +2,7 @@ import { pokemonPrefs, catToPokemon, getHabitat, getFamily, getFamilyMembers } f
 import { isOwned, getWorld } from '../settings.js';
 import { esc, worldToClass, habitatBadge } from './helpers.js';
 import { showPokemonInfo } from './infoTab.js';
+import { spriteImg } from '../sprites.js';
 
 export function renderCategoryList(filter = '') {
   const cats = Object.keys(catToPokemon).sort();
@@ -52,7 +53,7 @@ export function showCategoryDetail(catName) {
       const fam = getFamily(p) >= 0 ? getFamilyMembers(p) : null;
       return `<div class="cat-pokemon-card" data-pokemon="${esc(p)}">
         <div class="pkmn-name">
-          ${owned ? '<span class="world-dot ' + worldToClass(world || '') + '"></span>' : ''}${esc(p)}
+          ${spriteImg(p)}${owned ? '<span class="world-dot ' + worldToClass(world || '') + '"></span>' : ''}${esc(p)}
           ${h ? ' ' + habitatBadge(p) : ''}
           ${owned ? '<span style="font-size:11px;color:var(--success);margin-left:6px;">OWNED</span>' : ''}
         </div>

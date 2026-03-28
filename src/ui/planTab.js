@@ -6,6 +6,7 @@ import { planWithPool } from '../optimizer.js';
 import { settings, getWorld } from '../settings.js';
 import { esc, habitatBadge } from './helpers.js';
 import { showPokemonPopup } from './infoTab.js';
+import { spriteImg } from '../sprites.js';
 
 function renderPlanResults(result, mode) {
   const container = document.getElementById('plan-results');
@@ -80,7 +81,7 @@ function renderPlanResults(result, mode) {
       const fam = getFamily(p);
       const famColor = familyColors[fam];
       const border = famColor ? `border: 2px solid ${famColor}` : '';
-      return `<span class="pokemon-badge" data-pokemon="${esc(p)}" style="${border}">${esc(p)} ${habitatBadge(p)}</span>`;
+      return `<span class="pokemon-badge" data-pokemon="${esc(p)}" style="${border}">${spriteImg(p)}${esc(p)} ${habitatBadge(p)}</span>`;
     }
 
     html += `
@@ -161,7 +162,7 @@ function renderPlanResults(result, mode) {
           <span class="plan-house-score bad">Need more roommates</span>
         </div>
         <div class="result-pokemon">
-          ${result.leftover.map(p => `<span class="pokemon-badge" data-pokemon="${esc(p)}">${esc(p)} ${habitatBadge(p)}</span>`).join('')}
+          ${result.leftover.map(p => `<span class="pokemon-badge" data-pokemon="${esc(p)}">${spriteImg(p)}${esc(p)} ${habitatBadge(p)}</span>`).join('')}
         </div>
       </div>
     `;

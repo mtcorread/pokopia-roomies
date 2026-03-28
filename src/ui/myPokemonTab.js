@@ -3,6 +3,7 @@ import { settings, isOwned, getWorld, addOwned, removeOwned, setWorld, importSet
 import { setupAutocomplete } from './autocomplete.js';
 import { esc, worldToClass } from './helpers.js';
 import { showPokemonInfo } from './infoTab.js';
+import { spriteImg } from '../sprites.js';
 
 export function renderMyPokemon() {
   const search = (document.getElementById('my-search')?.value || '').toLowerCase();
@@ -55,6 +56,7 @@ export function renderMyPokemon() {
   grid.innerHTML = owned.map(p => {
     const world = getWorld(p);
     return `<div class="owned-card" data-pokemon="${esc(p)}">
+      ${spriteImg(p)}
       <span class="name" data-action="info">${esc(p)}</span>
       <select data-action="world">
         <option value="" ${!world ? 'selected' : ''}>-- Select World --</option>

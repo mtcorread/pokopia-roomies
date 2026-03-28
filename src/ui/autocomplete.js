@@ -1,6 +1,7 @@
 import { allPokemon } from '../data.js';
 import { isOwned, getWorld } from '../settings.js';
 import { worldToClass } from './helpers.js';
+import { spriteImg } from '../sprites.js';
 
 export function setupAutocomplete(inputEl, listEl, onSelect, filterFn) {
   let highlighted = -1;
@@ -21,7 +22,7 @@ export function setupAutocomplete(inputEl, listEl, onSelect, filterFn) {
       const world = getWorld(m);
       const wClass = world ? 'world-' + worldToClass(world) : '';
       return `<div class="autocomplete-item" data-index="${i}">
-        <span>${m}</span>
+        <span>${spriteImg(m)}${m}</span>
         ${owned ? `<span class="owned-marker ${wClass}">${world || 'Owned'}</span>` : ''}
       </div>`;
     }).join('');
